@@ -60,9 +60,9 @@ This project is a simple authentication system using JWT (JSON Web Tokens) with 
 To create a new user, send a POST request to `/signup` with the following JSON payload:
 ```bash
 {
-   "first_name": "Charles",
-   "last_name": "Babbage",
-   "email": "charles.babbage@example.com",
+   "first_name": "Simon",
+   "last_name": "Barjona",
+   "email": "simonbarjona@example.com",
    "password": "yourpassword"
 }
 ```
@@ -72,7 +72,7 @@ To create a new user, send a POST request to `/signup` with the following JSON p
 To authenticate a user, send a POST request to `/signin` with the following JSON payload:
 ```bash
 {
-   "email": "john.doe@example.com",
+   "email": "simonbarjona@example.com",
    "password": "yourpassword"
 }
 ```
@@ -101,7 +101,7 @@ backend-in-node/
 ├── config/
 │   └── db.js
 ├── controllers/
-│   └── **authController.js**
+│   └── authController.js
 ├── middleware/
 │   └── authMiddleware.js
 ├── models/
