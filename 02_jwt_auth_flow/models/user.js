@@ -39,9 +39,9 @@ const userSchema = new mongoose.Schema({
     required: [true, "Please provide a password"],
     select: false,
   },
-  passwordResetOTP: String,
-  passwordResetExpires: Date,
-  passwordResetToken: String,
+  password_reset_otp: String,
+  password_reset_expires: Date,
+  password_reset_token: String,
 });
 
 // Pre-save hook to hash the password before saving in the database

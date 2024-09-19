@@ -175,9 +175,9 @@ exports.forgotPassword = async (req, res) => {
     // Generate reset token
     const resetToken = generateResetPasswordToken(user.user_uuid, user.email);
     // Save OTP and expiration to user document
-    user.passwordResetOTP = otp;
-    user.passwordResetExpires = otpExpires;
-    user.passwordResetToken = resetToken;
+    user.password_reset_otp = otp;
+    user.password_reset_expires = otpExpires;
+    user.password_reset_token = resetToken;
     await user.save({ validateBeforeSave: false });
 
     // Send OTP to user's email
@@ -215,8 +215,8 @@ exports.resendOTP = async (req, res) => {
     const otpExpires = Date.now() + 10 * 60 * 1000; // OTP expires in 10 minutes
 
     // Update user document with new OTP
-    user.passwordResetOTP = otp;
-    user.passwordResetExpires = otpExpires;
+    user.password_reset_otp = otp;
+    user.password_reset_expires = otpExpires;
     await user.save({ validateBeforeSave: false });
 
     // Send email with new OTP
@@ -263,9 +263,10 @@ exports.resetPassword = async (req, res) => {
 
     // Set new password
     user.password = new_password;
-    user.passwordResetOTP = undefined;
-    user.passwordResetExpires = undefined;
-    user.passwordResetToken = undefined;
+
+    user.password_reset_otp = undefined;
+    user.password_reset_expires = undefined;
+    user.password_reset_token = undefined;
     await user.save();
 
     // Log the user in, send JWT
