@@ -1,0 +1,19 @@
+{
+  "name": "hello_world",
+  "version": "1.0.0",
+  "description": "Minimalist HTTP server with ExpressJS",
+  "main": "index.js",
+  "engines": {
+    "node": ">=18",
+    "npm": ">=10"
+  },
+  "scripts": {
+    "dev": "node --watch index.js",
+    "start":"node index.js"
+  },
+  "author": "Boluwatife Ajose",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
