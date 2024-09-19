@@ -1,29 +1,59 @@
 const jwt = require("jsonwebtoken");
+const User = require("../models/user");
 
 /**
- * Middleware to verify the token sent by the user.
- * @param {object} req - The request object.
- * @param {object} res - The response object.
- * @param {function} next - The next middleware function.
- * @returns {void}
+ * Middleware to verify authentication or reset token based on the `tokenType` flag.
+ * @param {string} tokenType - Type of token to verify ('auth' or 'reset').
+ * @returns {function} Middleware function.
  */
-module.exports = (req, res, next) => {
-  // Get token from the header
-  const authHeader =
-    req.headers["authorization"] || req.headers["Authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
+const verifyToken = (tokenType) => {
+  return async (req, res, next) => {
+    try {
+      // Get token from header
+      const authHeader = req.headers.authorization || req.headers.Authorization;
+      if (!authHeader || !authHeader.startsWith("Bearer ")) {
+        return res.status(401).json({
+          success: false,
+          message: `No ${
+            tokenType === "reset" ? "reset" : "auth"
+          } token provided.`,
+        });
+      }
 
-  // Check if token exists
-  if (!token) return res.status(401).json({ message: "Access denied!" });
+      const token = authHeader.split(" ")[1];
 
-  try {
-    // Verify token
-    const verified = jwt.verify(token, process.env.JWT_SECRET);
-    req.userId = verified.userId;
+      // Verify token
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    next();
-  } catch (error) {
-    // Invalid token
-    res.status(403).json({ message: "Invalid token" });
-  }
+      if (tokenType === "reset") {
+        // For reset token verification, find user and check if token is valid
+        const user = await User.findOne({ user_uuid: decoded.userId });
+
+        if (!user) {
+          return res.status(401).json({
+            success: false,
+            message: "Invalid or expired reset token.",
+          });
+        }
+
+        // Attach user to request object
+        req.user = user;
+      } else {
+        // For authentication token verification
+        req.userId = decoded.userId;
+      }
+
+      next();
+    } catch (error) {
+      res.status(401).json({
+        success: false,
+        message: `Invalid ${tokenType === "reset" ? "reset" : "auth"} token.`,
+        error: error.message,
+      });
+    }
+  };
 };
+
+// Export two middlewares: one for auth token, one for reset token
+module.exports.verifyAuthToken = verifyToken("auth");
+module.exports.verifyResetToken = verifyToken("reset");

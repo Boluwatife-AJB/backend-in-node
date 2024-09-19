@@ -2,6 +2,19 @@ const bcrypt = require("bcryptjs");
 const mongoose = require("mongoose");
 const { v4: uuidv4 } = require("uuid");
 
+/**
+ * User schema
+ * @typedef {Object} User
+ * @property {string} user_uuid - The unique identifier for the user.
+ * @property {string} first_name - The first name of the user.
+ * @property {string} last_name - The last name of the user.
+ * @property {string} email - The email of the user.
+ * @property {string} password - The hashed password of the user.
+ * @property {string} passwordResetOTP - The password reset OTP.
+ * @property {Date} passwordResetExpires - The password reset expiration date.
+ * @property {string} passwordResetToken - The password reset token.
+ */
+
 const userSchema = new mongoose.Schema({
   user_uuid: {
     type: String,
@@ -26,6 +39,9 @@ const userSchema = new mongoose.Schema({
     required: [true, "Please provide a password"],
     select: false,
   },
+  passwordResetOTP: String,
+  passwordResetExpires: Date,
+  passwordResetToken: String,
 });
 
 // Pre-save hook to hash the password before saving in the database
