@@ -42,6 +42,7 @@ const userSchema = new mongoose.Schema({
   password_reset_otp: String,
   password_reset_expires: Date,
   password_reset_token: String,
+
 });
 
 // Pre-save hook to hash the password before saving in the database

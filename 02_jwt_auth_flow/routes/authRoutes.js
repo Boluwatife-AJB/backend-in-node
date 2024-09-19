@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const authController = require("../controllers/authController");
 const { verifyResetToken } = require("../middleware/authMiddleware");
+const authMiddleware = require("../middleware/authMiddleware");
 
 /**
  * @route POST /auth/signin
@@ -18,7 +19,7 @@ const { verifyResetToken } = require("../middleware/authMiddleware");
  * @tags Auth
  * @security JWT
  */
-
+router.post("/signin", authController.signin);
 /**
  * @route POST /auth/signup
  * @desc Sign up user
@@ -35,6 +36,8 @@ const { verifyResetToken } = require("../middleware/authMiddleware");
  * @consumes application/json
  * @tags Auth
  */
+router.post("/signup", authController.signup);
+
 
 /**
  * @route POST /auth/forgot-password
@@ -49,6 +52,7 @@ const { verifyResetToken } = require("../middleware/authMiddleware");
  * @consumes application/json
  * @tags Auth
  */
+router.post("/forgot-password", authController.forgotPassword);
 
 /**
  * @route POST /auth/resend-otp
@@ -62,6 +66,8 @@ const { verifyResetToken } = require("../middleware/authMiddleware");
  * @produces application/json
  * @tags Auth
  */
+router.post("/resend-otp", verifyResetToken, authController.resendOTP);
+
 
 /**
  * @route POST /auth/reset-password
@@ -76,11 +82,10 @@ const { verifyResetToken } = require("../middleware/authMiddleware");
  * @produces application/json
  * @tags Auth
  */
-
-router.post("/signin", authController.signin);
-router.post("/signup", authController.signup);
-router.post("/forgot-password", authController.forgotPassword);
-router.post("/resend-otp", verifyResetToken, authController.resendOTP);
 router.post("/reset-password", verifyResetToken, authController.resetPassword);
+
+
+
+
 
 module.exports = router;

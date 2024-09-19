@@ -3,7 +3,6 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 const crypto = require("crypto");
 const sendEmail = require("../utils/email");
-
 /**
  * Generates a JWT token for the user.
  * @param {string} user_uuid - The unique identifier for the user.
