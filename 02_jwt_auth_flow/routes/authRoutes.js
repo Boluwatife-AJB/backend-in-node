@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const authController = require("../controllers/authController");
 const { verifyResetToken } = require("../middleware/authMiddleware");
-const authMiddleware = require("../middleware/authMiddleware");
+
 
 /**
  * @route POST /auth/signin

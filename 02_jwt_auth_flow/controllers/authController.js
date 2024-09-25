@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 const crypto = require("crypto");
 const sendEmail = require("../utils/email");
+
 /**
  * Generates a JWT token for the user.
  * @param {string} user_uuid - The unique identifier for the user.
@@ -237,6 +238,42 @@ exports.resendOTP = async (req, res) => {
     });
   }
 };
+
+/**
+ * Verify user's OTP code
+ * @param {object} req - The request object.
+ * @param {object} res - The response object.
+ * @returns {void}
+ */
+exports.verifyOTP = async (req, res) => {
+  try {
+    const { otp } = req.body;
+    const user = req.user;
+
+     if (
+       user.passwordResetOTP !== otp ||
+       user.passwordResetExpires < Date.now()
+     ) {
+       return res.status(400).json({
+         success: false,
+         message: "Invalid or expired OTP.",
+       });
+     }
+
+    res.status(200).json({
+      success: true,
+      message: "OTP sent to email!",
+      resetToken,
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Incorrect OTP, try again!",
+      error: error.message,
+    });
+  }
+}
 
 /**
  * Resets user's password.
