@@ -220,11 +220,11 @@ exports.resendOTP = async (req, res) => {
     await user.save({ validateBeforeSave: false });
 
     // Send email with new OTP
-    // await sendEmail({
-    //   to: user.email,
-    //   subject: "Your new password reset OTP",
-    //   text: `Your new OTP for password reset is: ${otp}. It will expire in 10 minutes.`,
-    // });
+    await sendEmail({
+      to: user.email,
+      subject: "Your new password reset OTP",
+      text: `Your new OTP for password reset is: ${otp}. It will expire in 10 minutes.`,
+    });
 
     res.status(200).json({
       success: true,
@@ -250,22 +250,20 @@ exports.verifyOTP = async (req, res) => {
     const { otp } = req.body;
     const user = req.user;
 
-     if (
-       user.passwordResetOTP !== otp ||
-       user.passwordResetExpires < Date.now()
-     ) {
-       return res.status(400).json({
-         success: false,
-         message: "Invalid or expired OTP.",
-       });
-     }
+    if (
+      user.password_reset_otp !== otp ||
+      user.password_reset_expires < Date.now()
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid or expired OTP.",
+      });
+    }
 
     res.status(200).json({
       success: true,
-      message: "OTP sent to email!",
-      resetToken,
+      message: "OTP verified successfully",
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -273,7 +271,7 @@ exports.verifyOTP = async (req, res) => {
       error: error.message,
     });
   }
-}
+};
 
 /**
  * Resets user's password.
@@ -283,17 +281,13 @@ exports.verifyOTP = async (req, res) => {
  */
 exports.resetPassword = async (req, res) => {
   try {
-    const { otp, new_password } = req.body;
+    const { new_password, new_password_confirm } = req.body;
     const user = req.user;
 
-    // Verify OTP
-    if (
-      user.passwordResetOTP !== otp ||
-      user.passwordResetExpires < Date.now()
-    ) {
+    if (new_password !== new_password_confirm) {
       return res.status(400).json({
         success: false,
-        message: "Invalid or expired OTP.",
+        message: "Passwords do not match",
       });
     }
 

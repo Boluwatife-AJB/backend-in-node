@@ -55,7 +55,7 @@ router.post("/signup", authController.signup);
 router.post("/forgot-password", authController.forgotPassword);
 
 /**
- * @route POST /auth/resend-otp
+ * @route GET /auth/resend-otp
  * @desc Resend OTP
  * @access Public
  * @type {Object}
@@ -66,7 +66,22 @@ router.post("/forgot-password", authController.forgotPassword);
  * @produces application/json
  * @tags Auth
  */
-router.post("/resend-otp", verifyResetToken, authController.resendOTP);
+router.get("/resend-otp", verifyResetToken, authController.resendOTP);
+
+/**
+ * @route POST /auth/verify-otp
+ * @desc Verify OTP
+ * @access Public
+ * @type {Object}
+ * @property {string} otp.required - otp
+ * @returns {Object} 200 - A successful message
+ * @returns {Error}  default - Unexpected error
+ * @group Auth - Operations about authentication
+ * @produces application/json
+ * @consumes application/json
+ * @tags Auth
+ */
+router.post("/verify-otp", verifyResetToken, authController.verifyOTP);
 
 
 /**
