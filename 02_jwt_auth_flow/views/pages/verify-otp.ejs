@@ -1,52 +1,38 @@
-<%- include('../partials/head') %>
-
-<body class="bg-gray-100 font-sen">
-  <main class="grid min-h-screen w-full grid-cols-1 md:grid-cols-2 overflow-hidden">
-    <div class="relative hidden md:block">
-      <img src="/assets/svg/placeholder.svg" alt="Auth Image" class="w-full h-full object-cover">
-    </div>
-    <div class="flex flex-col items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
-      <div class="w-full max-w-md xl:max-w-lg 2xl:max-w-2xl">
-        <h1 class="text-3xl text-center font-bold text-blue-600 mb-2.5">Verify OTP</h1>
-        <p class="text-center text-gray-600 mb-8">
-          Please enter the 6-digit OTP sent to your email address to verify your identity.
-        </p>
-        <form action="/api/auth/verify-otp" class="mt-8 flex-col flex gap-5" method="POST">
-          <div>
-            <label for="otp" class="block text-sm font-medium  text-gray-700 mb-4">Enter 6-digit OTP Code</label>
-            <div class="flex justify-between gap-2">
-              <% for(let i=0; i<6; i++) { %>
-              <input type="text" inputmode="numeric" maxlength="1" pattern="\d{1}" class="w-14 h-14 text-center text-xl font-bold rounded-lg border-gray-300 shadow-sm focus:border-blue-300 focus:outline-none focus:ring focus:ring-blue-200 focus:ring-opacity-50" required>
-              <% } %>
-            </div>
-          </div>
-          <div class="mt-4">
-            <button type="submit" class="w-full bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition duration-300">Verify OTP</button>
-          </div>
-        </form>
-        <p class="mt-5 text-center text-sm text-gray-600">
-          Didn't receive the code? <a href="/api/auth/resend-otp" class="font-medium hover:underline text-blue-600 hover:text-blue-500">Resend OTP</a>
-        </p>
+<%- include('../partials/auth-layout', { body: `
+  <h1 class="text-3xl text-center font-bold text-blue-600 mb-2.5">Verify OTP</h1>
+  <p class="text-center text-gray-600 mb-8">
+    Please enter the 6-digit OTP sent to your email address to verify your identity.
+  </p>
+  <form action="/api/auth/verify-otp" class="mt-8 flex-col flex gap-5" method="POST">
+    <div>
+      <label for="otp" class="block text-sm font-medium text-gray-700 mb-4">Enter 6-digit OTP Code</label>
+      <div class="flex justify-between gap-2">
+        <% for(let i=0; i<6; i++) { %>
+        <input type="text" inputmode="numeric" maxlength="1" pattern="\d{1}" class="w-14 h-14 text-center text-xl font-bold rounded-lg border-gray-300 shadow-sm focus:border-blue-300 focus:outline-none focus:ring focus:ring-blue-200 focus:ring-opacity-50" required>
+        <% } %>
       </div>
-    </div>
-  </main>
-
-  <script>
-    // JavaScript to enhance OTP input experience
-    const otpInputs = document.querySelectorAll('input[inputmode="numeric"]');
-    otpInputs.forEach((input, index) => {
-      input.addEventListener('input', (e) => {
-        if (e.target.value && index < otpInputs.length - 1) {
-          otpInputs[index + 1].focus();
-        }
-      });
-      input.addEventListener('keydown', (e) => {
-        if (e.key === 'Backspace' && !e.target.value && index > 0) {
-          otpInputs[index - 1].focus();
-        }
-      });
+      </div>
+      <div class="mt-4">
+        <button type="submit" class="w-full bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition duration-300">Verify OTP</button>
+      </div>
+      </form>
+      <p class="mt-5 text-center text-sm text-gray-600">
+        Didn't receive the code? <a href="/api/auth/resend-otp" class="font-medium hover:underline text-blue-600 hover:text-blue-500">Resend OTP</a>
+      </p>
+<script>
+  // JavaScript to enhance OTP input experience
+  const otpInputs = document.querySelectorAll('input[inputmode="numeric"]');
+  otpInputs.forEach((input, index) => {
+    input.addEventListener('input', (e) => {
+      if (e.target.value && index < otpInputs.length - 1) {
+        otpInputs[index + 1].focus();
+      }
     });
-  </script>
-</body>
-
-</html>
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Backspace' && !e.target.value && index > 0) {
+        otpInputs[index - 1].focus();
+      }
+    });
+  });
+</script>
+` }) %>
