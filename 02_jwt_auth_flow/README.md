@@ -152,7 +152,10 @@ backend-in-node/
 │   ├── assets/
 │   │    ├── images/
 │   │    └── svg/
-│   └── css/
+│   ├── css/
+│   └── js/
+│        ├── index.js
+│        └── auth.js
 ├── routes/
 │   ├── authRoutes.js
 │   └── viewRoutes.js

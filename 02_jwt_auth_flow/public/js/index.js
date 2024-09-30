@@ -1,4 +1,4 @@
-import { signIn } from "./sign-in";
+import { signIn } from "./auth.js";
 
 // DOM ELEMENTS
 const signInForm = document.getElementById("form-sign-in");
@@ -7,8 +7,8 @@ const signInForm = document.getElementById("form-sign-in");
 if (signInForm) {
   signInForm.addEventListener("submit", (event) => {
     event.preventDefault();
-    const email = document.getElementById("email");
-    const password = document.getElementById("password");
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
     signIn(email, password);
   });
 }

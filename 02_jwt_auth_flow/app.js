@@ -16,6 +16,8 @@ app.use(express.json());
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views/pages"));
 
+// app.use(express.static(`${__dirname}/public`));
+
 
 // Routes
 app.use("/", viewRoutes);
