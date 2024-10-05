@@ -10,10 +10,11 @@ export const signIn = async (email, password) => {
       body: JSON.stringify({ email, password }),
     });
 
+    console.log(response)
+
     if (response.ok) {
       const data = await response.json();
       showAlert("success", "Logged in successfully");
-      console.log(data.data);
       const apiResponse = data.data;
       const user_token = apiResponse.token;
 
@@ -21,10 +22,131 @@ export const signIn = async (email, password) => {
 
       return data;
     } else {
-      throw new Error("Sign in failed");
+      const data = await response.json();
+      // console.error(data)
+      showAlert("error", data.message || "Invalid email or password");
     }
   } catch (error) {
-    showAlert("error", "sign in failed!");
+    console.error("Sign in error:", error);
+    showAlert("error", "Unable to connect to the server. Please try again later.");
+  }
+};
+
+
+export const signUp = async (first_name, last_name, email, password) => {
+  try {
+    const response = await fetch("http://127.0.0.1:8080/api/auth/signup", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ first_name, last_name, email, password }),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      showAlert("success", "Signed up successfully");
+      console.log(data.data);
+    } else {
+      const data = await response.json();
+      console.error(data);
+      showAlert("error", data.message || "Sign up failed");
+    }
+  } catch (error) {
+    showAlert("error", "sign up failed!");
+    console.error(error);
+  }
+};
+
+export const forgotPassword = async (email) => {
+  try {
+    const response = await fetch(
+      "http://127.0.0.1:8080/api/auth/forgot-password",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      }
+    );
+
+    if (response.ok) {
+      const data = await response.json();
+      showAlert("info", "OTP sent to your email");
+      // console.log(data);
+      const { resetToken } = data 
+      localStorage.setItem('resetPasswordToken', resetToken)
+      
+      window.setTimeout(() => {
+        location.assign("/verify-otp");
+      }, 2500);
+    } else {
+      const data = await response.json();
+      console.error(data);
+      showAlert("error", "Email does not exist, please check your email");
+    }
+  } catch (error) {
+    showAlert("error", "Email does not exist, please check your email");
+    console.error(error);
+  }
+};
+
+export const verifyOtp = async (otp, resetPasswordToken) => {
+  try {
+    const response = await fetch("http://127.0.0.1:8080/api/auth/verify-otp", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${resetPasswordToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({otp}),
+    });
+
+    console.log(response)
+
+    if (response.ok) {
+      const data = await response.json();
+      showAlert("info", "OTP submitted");
+      console.log(data.data);
+      window.setTimeout(() => {
+        location.assign("/reset-password");
+      }, 1500);
+    } else {
+      const data = await response.json();
+      console.error(data);
+      showAlert("error", "Invalid OTP!");
+    }
+  } catch (error) {
+    showAlert("error", "Invalid OTP!");
+    console.error(error);
+  }
+};
+
+export const resetPassword = async (password, passwordConfirm, resetPasswordToken) => {
+  try {
+    const response = await fetch(
+      "http://127.0.0.1:8080/api/auth/reset-password",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${resetPasswordToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          new_password: password,
+          new_password_confirm: passwordConfirm,
+        }),
+      }
+    );
+
+    if (response.ok) {
+      const data = await response.json();
+      showAlert("success", "Password reset successful!");
+      console.log(data.data);
+    }
+  } catch (error) {
+    showAlert("error", "Password does not match, please try again");
     console.error(error);
   }
 };
