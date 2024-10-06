@@ -1,4 +1,4 @@
-import { signIn, signUp, forgotPassword, verifyOtp, resetPassword } from "./auth.js";
+import { signIn, signUp, forgotPassword, verifyOtp, resetPassword, resendOtp } from "./auth.js";
 
 // DOM ELEMENTS
 const signInForm = document.getElementById("sign-in-form");
@@ -105,9 +105,9 @@ if (verifyOtpForm) {
   // Resend OTP
   const resendOTPButton = document.getElementById("reset-otp-button")
 
-  // resendOTPButton.addEventListener("click", () => {
-
-  // })
+  resendOTPButton.addEventListener("click", () => {
+    resendOtp()
+  })
 
   verifyOtpForm.addEventListener("submit", (event) => {
     event.preventDefault();

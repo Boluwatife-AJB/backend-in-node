@@ -250,7 +250,7 @@ exports.verifyOTP = async (req, res) => {
     const { otp } = req.body;
     const user = req.user;
 
-    console.log(user)
+    // console.log(user)
 
     if (
       user.password_reset_otp !== otp ||

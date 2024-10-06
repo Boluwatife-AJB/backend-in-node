@@ -92,6 +92,31 @@ export const forgotPassword = async (email) => {
   }
 };
 
+export const resendOtp = async () => {
+  try {
+    const response = await fetch("http://127.0.0.1:8080/api/auth/resend-otp", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("resetPasswordToken")}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      showAlert("info", "OTP resent");
+      console.log(data.data);
+    } else {
+      const data = await response.json();
+      console.error(data);
+      showAlert("error", "Unable to resend otp");
+    }
+  } catch {
+    showAlert("error", "Unable to resend otp");
+    console.error(error);
+  }
+};
+
 export const verifyOtp = async (otp, resetPasswordToken) => {
   try {
     const response = await fetch("http://127.0.0.1:8080/api/auth/verify-otp", {
