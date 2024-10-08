@@ -18,6 +18,7 @@ const authMiddleware = require("../middleware/authMiddleware");
  * @tags Auth
  * @security JWT
  */
+router.post("/signin", authController.signin);
 
 /**
  * @route POST /auth/signup
@@ -36,7 +37,6 @@ const authMiddleware = require("../middleware/authMiddleware");
  * @tags Auth
  */
 
-router.post("/signin", authController.signin);
 router.post("/signup", authController.signup);
 
 module.exports = router;

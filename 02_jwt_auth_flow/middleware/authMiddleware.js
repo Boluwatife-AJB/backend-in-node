@@ -14,7 +14,9 @@ module.exports = (req, res, next) => {
   const token = authHeader && authHeader.split(" ")[1];
 
   // Check if token exists
-  if (!token) return res.status(401).json({ message: "Access denied!" });
+  if (!token) {
+    return res.status(401).json({ message: "Access denied!" });
+  }
 
   try {
     // Verify token
