@@ -1,25 +1,34 @@
 const express = require("express");
+const path = require("path");
+const cors = require("cors");
+
 const authRoutes = require("./routes/authRoutes");
 const viewRoutes = require("./routes/viewRoutes");
-const path = require("path");
+
 const app = express();
 
 // Serve static files from the "public" directory
 app.use(express.static(path.join(__dirname, "public")));
 
-const cors = require("cors");
 app.use(cors());
-
-// Middleware
 app.use(express.json());
 
 app.set("view engine", "ejs");
-app.set("views", path.join(__dirname, "views/pages"));
+app.set("views", path.join(__dirname, "./views/pages"));
 
-// app.use(express.static(`${__dirname}/public`));
-
-
-// Routes
+app.get("/", (_, res) => {
+  res.render("index", {
+    title: "welcome page",
+    routes: [
+      { name: "Home", path: "/" },
+      { name: "Sign Up", path: "/sign-up" },
+      { name: "Sign In", path: "/sign-in" },
+      { name: "Forgot Password", path: "/forgot-password" },
+      { name: "Verify OTP", path: "/verify-otp" },
+      { name: "Reset Password", path: "/reset-password" },
+    ],
+  });
+});
 app.use("/", viewRoutes);
 app.use("/api/auth", authRoutes);
 
