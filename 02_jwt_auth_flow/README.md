@@ -1,6 +1,6 @@
 # JWT-AUTH-EXPRESS
 
-This project is a simple authentication system using JWT (JSON Web Tokens) with Express.js. It includes user signup and signin functionalities, and protects routes using JWT middleware.
+This project is a simple authentication system using JWT (JSON Web Tokens) with Express.js. It includes user signup, signin, reset-password functionalities, and protects routes using JWT middleware.
 
 ## Table of Contents
 
@@ -152,7 +152,10 @@ backend-in-node/
 │   ├── assets/
 │   │    ├── images/
 │   │    └── svg/
-│   └── css/
+│   ├── css/
+│   └── js/
+│        ├── index.js
+│        └── auth.js
 ├── routes/
 │   ├── authRoutes.js
 │   └── viewRoutes.js

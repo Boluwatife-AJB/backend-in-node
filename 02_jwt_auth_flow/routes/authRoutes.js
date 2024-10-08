@@ -55,7 +55,7 @@ router.post("/signup", authController.signup);
 router.post("/forgot-password", authController.forgotPassword);
 
 /**
- * @route GET /auth/resend-otp
+ * @route POST /auth/resend-otp
  * @desc Resend OTP
  * @access Public
  * @type {Object}
@@ -66,7 +66,7 @@ router.post("/forgot-password", authController.forgotPassword);
  * @produces application/json
  * @tags Auth
  */
-router.get("/resend-otp", verifyResetToken, authController.resendOTP);
+router.post("/resend-otp", verifyResetToken, authController.resendOTP);
 
 /**
  * @route POST /auth/verify-otp
