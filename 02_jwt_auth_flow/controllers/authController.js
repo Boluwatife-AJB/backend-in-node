@@ -1,6 +1,8 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
+const crypto = require("crypto");
+const sendEmail = require("../utils/email");
 
 /**
  * Generates a JWT token for the user.
@@ -18,6 +20,12 @@ const userToken = (user_uuid, first_name, last_name, email) => {
       expiresIn: process.env.JWT_EXPIRES_IN,
     }
   );
+};
+
+const generateResetPasswordToken = (userId, user_email) => {
+  return jwt.sign({ userId, user_email }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN,
+  });
 };
 
 /**
@@ -139,5 +147,167 @@ exports.signin = async (req, res) => {
     createSendToken(user, 200, res, "User logged in successfully");
   } catch (error) {
     res.status(500).json({ message: "Error signing in", error: error.message });
+  }
+};
+
+/**
+ * Forgot password - sends OTP to user's email.
+ * @param {object} req - The request object.
+ * @param {object} res - The response object.
+ * @returns {void}
+ */
+exports.forgotPassword = async (req, res) => {
+  try {
+    // Get user based on posted email
+    const user = await User.findOne({ email: req.body.email });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "There is no user with that email address",
+      });
+    }
+
+    // Generate OTP
+    const otp = crypto.randomInt(100000, 999999).toString();
+    const otpExpires = Date.now() + 10 * 60 * 1000; // OTP expires in 10 minutes
+
+    // Generate reset token
+    const resetToken = generateResetPasswordToken(user.user_uuid, user.email);
+    // Save OTP and expiration to user document
+    user.password_reset_otp = otp;
+    user.password_reset_expires = otpExpires;
+    user.password_reset_token = resetToken;
+    await user.save({ validateBeforeSave: false });
+
+    // Send OTP to user's email
+    await sendEmail({
+      to: user.email,
+      subject: "Your password reset OTP",
+      text: `Your OTP for password reset is: ${otp}. It will expire in 10 minutes.`,
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "OTP sent to email!",
+      resetToken,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error sending OTP",
+      error: error.message,
+    });
+  }
+};
+
+/**
+ * Resends OTP to user's email.
+ * @param {object} req - The request object.
+ * @param {object} res - The response object.
+ * @returns {void}
+ */
+exports.resendOTP = async (req, res) => {
+  try {
+    const user = req.user;
+
+    const otp = crypto.randomInt(100000, 999999).toString();
+    const otpExpires = Date.now() + 10 * 60 * 1000; // OTP expires in 10 minutes
+
+    // Update user document with new OTP
+    user.password_reset_otp = otp;
+    user.password_reset_expires = otpExpires;
+    await user.save({ validateBeforeSave: false });
+
+    // Send email with new OTP
+    await sendEmail({
+      to: user.email,
+      subject: "Your new password reset OTP",
+      text: `Your new OTP for password reset is: ${otp}. It will expire in 10 minutes.`,
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "New OTP sent to email!",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Could not resend OTP. Please try again.",
+      error: error.message,
+    });
+  }
+};
+
+/**
+ * Verify user's OTP code
+ * @param {object} req - The request object.
+ * @param {object} res - The response object.
+ * @returns {void}
+ */
+exports.verifyOTP = async (req, res) => {
+  try {
+    const { otp } = req.body;
+    const user = req.user;
+
+    // console.log(user)
+
+    if (
+      user.password_reset_otp !== otp ||
+      user.password_reset_expires < Date.now()
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid or expired OTP.",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "OTP verified successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Incorrect OTP, try again!",
+      error: error.message,
+    });
+  }
+};
+
+/**
+ * Resets user's password.
+ * @param {object} req - The request object.
+ * @param {object} res - The response object.
+ * @returns {void}
+ */
+exports.resetPassword = async (req, res) => {
+  try {
+    const { new_password, new_password_confirm } = req.body;
+    const user = req.user;
+
+    if (new_password !== new_password_confirm) {
+      return res.status(400).json({
+        success: false,
+        message: "Passwords do not match",
+      });
+    }
+
+    // Set new password
+    user.password = new_password;
+
+    user.password_reset_otp = undefined;
+    user.password_reset_expires = undefined;
+    user.password_reset_token = undefined;
+    await user.save();
+
+    // Log the user in, send JWT
+    createSendToken(user, 200, res, "Password reset successfully");
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Could not reset password. Please try again.",
+      error: error.message,
+    });
   }
 };

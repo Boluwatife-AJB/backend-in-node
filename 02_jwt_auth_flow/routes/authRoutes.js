@@ -1,7 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const authController = require("../controllers/authController");
-const authMiddleware = require("../middleware/authMiddleware");
+const { verifyResetToken } = require("../middleware/authMiddleware");
+
 
 /**
  * @route POST /auth/signin
@@ -19,7 +20,6 @@ const authMiddleware = require("../middleware/authMiddleware");
  * @security JWT
  */
 router.post("/signin", authController.signin);
-
 /**
  * @route POST /auth/signup
  * @desc Sign up user
@@ -36,7 +36,71 @@ router.post("/signin", authController.signin);
  * @consumes application/json
  * @tags Auth
  */
-
 router.post("/signup", authController.signup);
+
+
+/**
+ * @route POST /auth/forgot-password
+ * @desc Forgot password
+ * @access Public
+ * @type {Object}
+ * @property {string} email.required - email
+ * @returns {Object} 200 - A successful message
+ * @returns {Error}  default - Unexpected error
+ * @group Auth - Operations about authentication
+ * @produces application/json
+ * @consumes application/json
+ * @tags Auth
+ */
+router.post("/forgot-password", authController.forgotPassword);
+
+/**
+ * @route POST /auth/resend-otp
+ * @desc Resend OTP
+ * @access Public
+ * @type {Object}
+ * @property {string} email.required - email
+ * @returns {Object} 200 - A successful message
+ * @returns {Error}  default - Unexpected error
+ * @group Auth - Operations about authentication
+ * @produces application/json
+ * @tags Auth
+ */
+router.post("/resend-otp", verifyResetToken, authController.resendOTP);
+
+/**
+ * @route POST /auth/verify-otp
+ * @desc Verify OTP
+ * @access Public
+ * @type {Object}
+ * @property {string} otp.required - otp
+ * @returns {Object} 200 - A successful message
+ * @returns {Error}  default - Unexpected error
+ * @group Auth - Operations about authentication
+ * @produces application/json
+ * @consumes application/json
+ * @tags Auth
+ */
+router.post("/verify-otp", verifyResetToken, authController.verifyOTP);
+
+
+/**
+ * @route POST /auth/reset-password
+ * @desc Reset password
+ * @type {Object}
+ * @access Public
+ * @property {string} password.required - password
+ * @returns {Object} 200 - A successful message
+ * @returns {Error}  default - Unexpected error
+ * @group Auth - Operations about authentication
+ * @consumes application/json
+ * @produces application/json
+ * @tags Auth
+ */
+router.post("/reset-password", verifyResetToken, authController.resetPassword);
+
+
+
+
 
 module.exports = router;
