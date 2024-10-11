@@ -3,8 +3,11 @@
   "version": "1.0.0",
   "description": "A practical and project-based learning approach to gain mastery in Node.Js",
   "main": "server.js",
+  "engines": {
+    "node": "^18"
+  },
   "scripts": {
-    "dev": "nodemon server.js",
+    "dev": "node --watch server",
     "start": "node server.js",
     "build:css": "npx tailwindcss -i ./public/css/tailwind.css -o ./public/css/output.css --minify"
   },
