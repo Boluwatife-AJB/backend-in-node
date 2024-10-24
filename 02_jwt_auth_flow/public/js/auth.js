@@ -100,6 +100,7 @@ export const resendOtp = async () => {
         Authorization: `Bearer ${localStorage.getItem("resetPasswordToken")}`,
         "Content-Type": "application/json",
       },
+      body: JSON.stringify({})
     });
 
     if (response.ok) {

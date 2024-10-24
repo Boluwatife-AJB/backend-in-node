@@ -4,7 +4,7 @@
   "description": "A practical and project-based learning approach to gain mastery in Node.Js",
   "main": "server.js",
   "engines": {
-    "node": "^18"
+    "node": ">=18"
   },
   "scripts": {
     "dev": "node --watch server",
